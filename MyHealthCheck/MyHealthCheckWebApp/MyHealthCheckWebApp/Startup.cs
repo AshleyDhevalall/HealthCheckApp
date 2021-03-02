@@ -1,3 +1,4 @@
+using MyHealthCheckWebApp.HealthChecks;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -8,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using MyHealthCheckWebApp.Clients;
-using MyHealthCheckWebApp.HealthChecks;
 using System;
 
 namespace MyHealthCheckWebApp
@@ -25,15 +25,15 @@ namespace MyHealthCheckWebApp
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-      services.AddHealthChecks();
-    // .AddCheck<MyCustomCheck>("MyCustomCheck", HealthStatus.Unhealthy, new string[] { "tag1" })
-     //.AddSqlServer(Configuration["ConnectionString"])
-     //.AddUrlGroup(new Uri("http://localhost/webapp"), "WebApp", HealthStatus.Unhealthy)
-    // .AddDiskStorageHealthCheck(s => s.AddDrive("C:\\", 1024)) // 1024 MB (1 GB) free minimum
-    // .AddProcessAllocatedMemoryHealthCheck(512); // 512 MB max allocated memory;
+      services.AddHealthChecks()
+    //  .AddCheck<MyCustomCheck>("MyCustomCheck", HealthStatus.Unhealthy, new string[] { "tag1" })
+      .AddUrlGroup(new Uri("http://localhost/myhealthcheckwebapi/weatherforecast"), "MyHealthCheckWebApi", HealthStatus.Unhealthy)
+      .AddDiskStorageHealthCheck(s => s.AddDrive("C:\\", 1024)) // 1024 MB (1 GB) free minimum
+      .AddProcessAllocatedMemoryHealthCheck(512); // 512 MB max allocated memory;
 
       services.AddHttpClient<IWeatherForecastClient, WeatherForecastClient>();
-   //   services.AddHealthChecksUI();
+  //    services.AddScoped<IMyCustomService, MyCustomService>();
+      services.AddHealthChecksUI();
       services.AddControllersWithViews();
     }
 
@@ -52,19 +52,14 @@ namespace MyHealthCheckWebApp
         }
       });
 
+      app.UseStaticFiles();
       app.UseHealthChecksUI();
+
       if (env.IsDevelopment())
       {
         app.UseDeveloperExceptionPage();
       }
-      else
-      {
-        app.UseExceptionHandler("/Home/Error");
-        // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-        app.UseHsts();
-      }
-      app.UseHttpsRedirection();
-      app.UseStaticFiles();
+
 
       app.UseRouting();
 

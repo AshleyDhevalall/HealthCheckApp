@@ -13,6 +13,7 @@ namespace MyHealthCheckWebApp.Controllers
     private readonly ILogger<HomeController> _logger;
     private readonly IWeatherForecastClient _weatherForecastClient;
 
+
     public HomeController(ILogger<HomeController> logger,
      IWeatherForecastClient weatherForecastClient)
     {
@@ -21,11 +22,6 @@ namespace MyHealthCheckWebApp.Controllers
     }
 
     public IActionResult Index()
-    {
-      return View();
-    }
-
-    public IActionResult HealthCheck()
     {
       return View();
     }

@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
-using MyHealthCheckWebApp.Clients;
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,45 +7,34 @@ namespace MyHealthCheckWebApp.HealthChecks
 {
   public class MyCustomCheck : IHealthCheck
   {
-    private readonly IWeatherForecastClient _weatherForecastClient;
+    private readonly IMyCustomService _customService;
 
-    public MyCustomCheck(IWeatherForecastClient weatherForecastClient)
+    public MyCustomCheck(IMyCustomService customService)
     {
-      _weatherForecastClient = weatherForecastClient;
+      _customService = customService;
     }
 
-    public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
+    public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
-      HealthCheckResult healthCheckResult;
-      try
-      {
-        var myresult = await _weatherForecastClient.GetWeatherForecasts();
-        var weatherforecasts = myresult.ToList();
-        healthCheckResult = HealthCheckResult.Healthy($"Retrieved {myresult.Count()} entries.");
-      }
-      catch(Exception ex)
-      {
-        healthCheckResult = HealthCheckResult.Unhealthy(ex.Message);
-      }
-
-      return healthCheckResult;
+      var result = _customService.IsHealthy() ? HealthCheckResult.Healthy() : HealthCheckResult.Unhealthy();
+      return Task.FromResult(result);
     }
   }
 
-  //public interface IMyCustomService
-  //{
+  public interface IMyCustomService
+  {
 
-  //  public bool IsHealthy();
+    public bool IsHealthy();
 
-  //}
+  }
 
-  //public class MyCustomService : IMyCustomService
-  //{
+  public class MyCustomService : IMyCustomService
+  {
 
-  //  public bool IsHealthy()
-  //  {
-  //    return new Random().NextDouble() > 0.5;
-  //  }
+    public bool IsHealthy()
+    {
+      return new Random().NextDouble() > 0.5;
+    }
 
-  //}
+  }
 }
